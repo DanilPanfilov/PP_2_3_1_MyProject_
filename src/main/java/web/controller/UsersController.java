@@ -18,7 +18,7 @@ public class UsersController {
     @GetMapping("/")// то что указывается в браузере
     public String getAllUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
-        return "index";// на какую hml страницу смотримx
+        return "index";// на какую hml страницу смотримxs
     }
 //
 //    @GetMapping("/{id}")
