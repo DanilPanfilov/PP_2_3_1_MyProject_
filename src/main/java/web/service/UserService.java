@@ -11,7 +11,7 @@ public interface UserService {//передается в контроллер
 
     public void save(User user);
 
-    public void update(User updateUser);
+    public void update(int id, User updateUser);
 
     public void delete(int id);
 }

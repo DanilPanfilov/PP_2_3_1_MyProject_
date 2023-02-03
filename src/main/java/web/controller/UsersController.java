@@ -27,15 +27,15 @@ public class UsersController {
 //        return "/show";
 //    }
 
-    @PostMapping("/edit")
-    public String update(@ModelAttribute("user") User user) {
-        userService.update(user);
+    @PostMapping("/{id}/edit")
+    public String update(@PathVariable("id") int id, @ModelAttribute("user") User user) {
+        userService.update(id, user);
         return "redirect:/";
     }
 
     @GetMapping("/{id}")
-    public String editUser(@PathVariable("id") int id, Model model){
-        model.addAttribute("user",userService.showUser(id));
+    public String editUser(@PathVariable("id") int id, Model model) {
+        model.addAttribute("user", userService.showUser(id));
         return "edit";
     }
 
