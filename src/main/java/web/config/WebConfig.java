@@ -5,6 +5,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -26,13 +28,17 @@ import java.util.Properties;
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
+@PropertySource("classpath:hibernate.properties")
 @ComponentScan("web")
 public class WebConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
 
-    public WebConfig(ApplicationContext applicationContext) {
+    private final Environment env;
+
+    public WebConfig(ApplicationContext applicationContext, Environment env) {
         this.applicationContext = applicationContext;
+        this.env = env;
     }
 
     @Bean
@@ -67,10 +73,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/schema");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setDriverClassName(env.getRequiredProperty("hibernate.driver_class"));
+        dataSource.setUrl(env.getRequiredProperty("hibernate.connection.url"));
+        dataSource.setUsername(env.getRequiredProperty("hibernate.connection.username"));
+        dataSource.setPassword(env.getRequiredProperty("hibernate.connection.password"));
         return dataSource;
     }
 
@@ -79,13 +85,13 @@ public class WebConfig implements WebMvcConfigurer {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setPersistenceProvider(new HibernatePersistenceProvider());
         entityManagerFactoryBean.setDataSource(getDataSource());
-        entityManagerFactoryBean.setPackagesToScan("web.model");//это точно так !
+        entityManagerFactoryBean.setPackagesToScan("web.model");
 
         Properties props = new Properties();
-        props.setProperty("hibernate.show_sql", "true");
-        props.setProperty("hibernate.globally_quoted_identifiers", "true");
-        props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-        props.setProperty("hibernate.hbm2ddl.auto", "update");
+        props.setProperty("hibernate.show_sql", env.getRequiredProperty("hibernate.show_sql"));
+        props.setProperty("hibernate.globally_quoted_identifiers", env.getRequiredProperty("hibernate.globally_quoted_identifiers"));
+        props.setProperty("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
+        props.setProperty("hibernate.hbm2ddl.auto", env.getRequiredProperty("hibernate.hbm2ddl.auto"));
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);

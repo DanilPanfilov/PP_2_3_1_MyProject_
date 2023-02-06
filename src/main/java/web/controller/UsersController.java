@@ -15,17 +15,11 @@ public class UsersController {
         this.userService = userService;
     }
 
-    @GetMapping("/")// то что указывается в браузере
+    @GetMapping("/")
     public String getAllUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
-        return "index";// на какую hml страницу смотримxs
+        return "index";
     }
-//
-//    @GetMapping("/{id}")
-//    public String showUser(@PathVariable("id") int id, Model model) {
-//        model.addAttribute("user", userService.showUser(id));
-//        return "/show";
-//    }
 
     @PostMapping("/{id}/edit")
     public String update(@PathVariable("id") int id, @ModelAttribute("user") User user) {
